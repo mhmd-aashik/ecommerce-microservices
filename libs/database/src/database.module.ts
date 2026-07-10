@@ -1,8 +1,14 @@
-import { Module } from '@nestjs/common';
-import { DatabaseService } from './database.service';
+import { DynamicModule, Module } from '@nestjs/common';
+import { createDatabaseProvider } from './database.provider';
 
-@Module({
-  providers: [DatabaseService],
-  exports: [DatabaseService],
-})
-export class DatabaseModule {}
+@Module({})
+export class DatabaseModule {
+  static forRoot(databaseUrlKey: string): DynamicModule {
+    const databaseProvider = createDatabaseProvider(databaseUrlKey);
+    return {
+      module: DatabaseModule,
+      providers: [databaseProvider],
+      exports: [databaseProvider],
+    };
+  }
+}
