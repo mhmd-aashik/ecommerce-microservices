@@ -1,0 +1,9 @@
+_format_version: '3.0'
+
+services:
+  - name: api-gateway
+    url: http://host.docker.internal:3000
+    routes:
+      - name: api-gateway-route
+        paths:
+          - /api
