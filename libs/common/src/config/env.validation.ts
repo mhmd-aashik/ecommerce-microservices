@@ -31,4 +31,9 @@ export const envValidationSchema = Joi.object({
   KEYCLOAK_BASE_URL: Joi.string().required(),
   KEYCLOAK_REALM: Joi.string().required(),
   KEYCLOAK_CLIENT_ID: Joi.string().required(),
+
+  LOG_LEVEL: Joi.string()
+    .valid('fatal', 'error', 'warn', 'info', 'debug', 'trace')
+    .default('info'),
+  LOG_PRETTY: Joi.boolean().default(false),
 });
