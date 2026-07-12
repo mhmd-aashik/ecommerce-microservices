@@ -2,51 +2,87 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GRPC_TO_HTTP_STATUS } from '../constants/grpc-status-map';
 
-interface GrpcException {
-  code?: number;
-  details?: string;
-}
-
-function isGrpcException(value: unknown): value is GrpcException {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    ('code' in value || 'details' in value)
-  );
-}
-
 @Catch()
 export class GrpcExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost): void {
+  catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
 
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal Server Error';
+    const errorResponse = this.buildErrorResponse(exception, request.url);
 
-    if (isGrpcException(exception)) {
-      status =
-        exception.code !== undefined
-          ? (GRPC_TO_HTTP_STATUS[exception.code] ??
-            HttpStatus.INTERNAL_SERVER_ERROR)
-          : HttpStatus.INTERNAL_SERVER_ERROR;
+    response.status(errorResponse.statusCode).json(errorResponse);
+  }
 
-      message = exception.details ?? message;
+  private buildErrorResponse(exception: unknown, path: string) {
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+      const response = exception.getResponse();
+
+      return {
+        statusCode: status,
+        message: this.extractHttpMessage(response),
+        error: HttpStatus[status],
+        timestamp: new Date().toISOString(),
+        path,
+      };
     }
 
-    response.status(status).json({
-      statusCode: status,
-      message,
-      error: HttpStatus[status],
+    if (this.isGrpcError(exception)) {
+      const status =
+        GRPC_TO_HTTP_STATUS[exception.code] ?? HttpStatus.INTERNAL_SERVER_ERROR;
+
+      return {
+        statusCode: status,
+        message: exception.details ?? 'Internal Server Error',
+        error: HttpStatus[status],
+        timestamp: new Date().toISOString(),
+        path,
+      };
+    }
+
+    return {
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Internal Server Error',
+      error: 'Internal Server Error',
       timestamp: new Date().toISOString(),
-      path: request.url,
-    });
+      path,
+    };
+  }
+
+  private isGrpcError(exception: unknown): exception is {
+    code: number;
+    details?: string;
+  } {
+    return (
+      typeof exception === 'object' &&
+      exception !== null &&
+      'code' in exception &&
+      typeof exception.code === 'number'
+    );
+  }
+
+  private extractHttpMessage(response: string | object): string | string[] {
+    if (typeof response === 'string') {
+      return response;
+    }
+
+    if (
+      typeof response === 'object' &&
+      response !== null &&
+      'message' in response
+    ) {
+      const message = (response as { message: string | string[] }).message;
+      return message;
+    }
+
+    return 'Unexpected error';
   }
 }
