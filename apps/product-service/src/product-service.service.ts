@@ -1,9 +1,14 @@
 import { DRIZZLE_DB } from '@app/database';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './categories/dto/create-category.dto';
 import { categories, products } from './db/schema';
 import type { ProductDatabase } from './db';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 import { CreateProductDto } from './products/dto/create-product.dto';
 
 @Injectable()
@@ -11,6 +16,15 @@ export class ProductServiceService {
   constructor(@Inject(DRIZZLE_DB) private readonly db: ProductDatabase) {}
 
   async createCategory(dto: CreateCategoryDto) {
+    const [existingCategory] = await this.db
+      .select()
+      .from(categories)
+      .where(eq(categories.slug, dto.slug));
+
+    if (existingCategory) {
+      throw new ConflictException('Category slug already exists');
+    }
+
     const [category] = await this.db
       .insert(categories)
       .values({
@@ -31,6 +45,21 @@ export class ProductServiceService {
   }
 
   async createProduct(dto: CreateProductDto) {
+    const [existingProduct] = await this.db
+      .select()
+      .from(products)
+      .where(or(eq(products.slug, dto.slug), eq(products.sku, dto.sku)));
+
+    if (existingProduct) {
+      if (existingProduct.slug === dto.slug) {
+        throw new ConflictException('Product slug already exists');
+      }
+
+      if (existingProduct.sku === dto.sku) {
+        throw new ConflictException('Product SKU already exists');
+      }
+    }
+
     const [product] = await this.db
       .insert(products)
       .values({
