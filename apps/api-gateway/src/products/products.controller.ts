@@ -8,18 +8,16 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import type {
-  CreateCategoryRequest,
-  CreateProductRequest,
-  UpdateProductRequest,
-} from './product-grpc.interface';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post('categories')
-  createCategory(@Body() body: CreateCategoryRequest) {
+  createCategory(@Body() body: CreateCategoryDto) {
     return this.productsService.createCategory(body);
   }
 
@@ -29,7 +27,7 @@ export class ProductsController {
   }
 
   @Post()
-  createProduct(@Body() body: CreateProductRequest) {
+  createProduct(@Body() body: CreateProductDto) {
     return this.productsService.createProduct(body);
   }
 
@@ -44,11 +42,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  updateProduct(
-    @Param('id') id: string,
-
-    @Body() body: Omit<UpdateProductRequest, 'id'>,
-  ) {
+  updateProduct(@Param('id') id: string, @Body() body: UpdateProductDto) {
     return this.productsService.updateProduct(id, body);
   }
 
