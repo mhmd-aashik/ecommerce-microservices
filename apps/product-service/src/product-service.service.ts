@@ -1,15 +1,12 @@
 import { DRIZZLE_DB } from '@app/database';
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './categories/dto/create-category.dto';
 import { categories, products } from './db/schema';
 import type { ProductDatabase } from './db';
 import { and, eq, or } from 'drizzle-orm';
 import { CreateProductDto } from './products/dto/create-product.dto';
+import { RpcException } from '@nestjs/microservices';
+import { status } from '@grpc/grpc-js';
 
 @Injectable()
 export class ProductServiceService {
@@ -22,7 +19,10 @@ export class ProductServiceService {
       .where(eq(categories.slug, dto.slug));
 
     if (existingCategory) {
-      throw new ConflictException('Category slug already exists');
+      throw new RpcException({
+        code: status.ALREADY_EXISTS,
+        message: 'Category slug already exists',
+      });
     }
 
     const [category] = await this.db
@@ -52,11 +52,17 @@ export class ProductServiceService {
 
     if (existingProduct) {
       if (existingProduct.slug === dto.slug) {
-        throw new ConflictException('Product slug already exists');
+        throw new RpcException({
+          code: status.ALREADY_EXISTS,
+          message: 'Product slug already exists',
+        });
       }
 
       if (existingProduct.sku === dto.sku) {
-        throw new ConflictException('Product SKU already exists');
+        throw new RpcException({
+          code: status.ALREADY_EXISTS,
+          message: 'Product SKU already exists',
+        });
       }
     }
 
