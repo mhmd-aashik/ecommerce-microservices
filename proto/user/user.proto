@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+  rpc CreateUserProfile (CreateUserProfileRequest) returns (UserResponse);
+  rpc FindUserById (FindUserByIdRequest) returns (UserResponse);
+  rpc FindUserByKeycloakId (FindUserByKeycloakIdRequest) returns (UserResponse);
+  rpc UpdateUserProfile (UpdateUserProfileRequest) returns (UserResponse);
+
+  rpc AddUserAddress (AddUserAddressRequest) returns (UserAddressResponse);
+  rpc FindUserAddresses (FindUserAddressesRequest) returns (UserAddressListResponse);
+  rpc SetDefaultAddress (SetDefaultAddressRequest) returns (UserAddressResponse);
+}
+
+message Empty {}
+
+message CreateUserProfileRequest {
+  string keycloakUserId = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string phone = 5;
+}
+
+message FindUserByIdRequest {
+  string id = 1;
+}
+
+message FindUserByKeycloakIdRequest {
+  string keycloakUserId = 1;
+}
+
+message UpdateUserProfileRequest {
+  string id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string phone = 4;
+}
+
+message UserResponse {
+  string id = 1;
+  string keycloakUserId = 2;
+  string email = 3;
+  string firstName = 4;
+  string lastName = 5;
+  string phone = 6;
+  bool isActive = 7;
+}
+
+message AddUserAddressRequest {
+  string userId = 1;
+  string fullName = 2;
+  string phone = 3;
+  string addressLine1 = 4;
+  string addressLine2 = 5;
+  string city = 6;
+  string state = 7;
+  string postalCode = 8;
+  string country = 9;
+  bool isDefault = 10;
+}
+
+message FindUserAddressesRequest {
+  string userId = 1;
+}
+
+message SetDefaultAddressRequest {
+  string userId = 1;
+  string addressId = 2;
+}
+
+message UserAddressResponse {
+  string id = 1;
+  string userId = 2;
+  string fullName = 3;
+  string phone = 4;
+  string addressLine1 = 5;
+  string addressLine2 = 6;
+  string city = 7;
+  string state = 8;
+  string postalCode = 9;
+  string country = 10;
+  bool isDefault = 11;
+  bool isActive = 12;
+}
+
+message UserAddressListResponse {
+  repeated UserAddressResponse addresses = 1;
+}
