@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { GRPC_TO_HTTP_STATUS } from '../constants/grpc-status-map';
+import { CORRELATION_ID_HEADER } from '../middleware/correlation-id.middleware';
 
 @Catch()
 export class GrpcExceptionFilter implements ExceptionFilter {
@@ -16,12 +17,23 @@ export class GrpcExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const errorResponse = this.buildErrorResponse(exception, request.url);
+    const correlationId =
+      request.headers[CORRELATION_ID_HEADER]?.toString() ?? 'unknown';
+
+    const errorResponse = this.buildErrorResponse(
+      exception,
+      request.url,
+      correlationId,
+    );
 
     response.status(errorResponse.statusCode).json(errorResponse);
   }
 
-  private buildErrorResponse(exception: unknown, path: string) {
+  private buildErrorResponse(
+    exception: unknown,
+    path: string,
+    correlationId: string,
+  ) {
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const response = exception.getResponse();
@@ -32,6 +44,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
         error: HttpStatus[status],
         timestamp: new Date().toISOString(),
         path,
+        correlationId,
       };
     }
 
@@ -45,6 +58,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
         error: HttpStatus[status],
         timestamp: new Date().toISOString(),
         path,
+        correlationId,
       };
     }
 
@@ -54,6 +68,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
       error: 'Internal Server Error',
       timestamp: new Date().toISOString(),
       path,
+      correlationId,
     };
   }
 

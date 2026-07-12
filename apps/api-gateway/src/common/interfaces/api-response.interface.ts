@@ -5,4 +5,5 @@ export interface ApiResponse<T> {
   data: T;
   timestamp: string;
   path: string;
+  correlationId: string;
 }
