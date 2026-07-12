@@ -1,9 +1,9 @@
 import { DRIZZLE_DB } from '@app/database';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './categories/dto/create-category.dto';
 import { categories, products } from './db/schema';
 import type { ProductDatabase } from './db';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { CreateProductDto } from './products/dto/create-product.dto';
 
 @Injectable()
@@ -41,6 +41,49 @@ export class ProductServiceService {
         price: dto.price,
         sku: dto.sku,
       })
+      .returning();
+
+    return product;
+  }
+
+  async findAllProducts() {
+    return this.db.select().from(products).where(eq(products.isActive, true));
+  }
+
+  async findProductById(id: string) {
+    const [product] = await this.db
+      .select()
+      .from(products)
+      .where(and(eq(products.id, id), eq(products.isActive, true)));
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return product;
+  }
+
+  async updateProduct(id: string, dto: Partial<CreateProductDto>) {
+    await this.findProductById(id);
+    const [product] = await this.db
+      .update(products)
+      .set({
+        ...dto,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, id))
+      .returning();
+
+    return product;
+  }
+
+  async deleteProduct(id: string) {
+    await this.findProductById(id);
+    const [product] = await this.db
+      .update(products)
+      .set({
+        isActive: false,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, id))
       .returning();
 
     return product;

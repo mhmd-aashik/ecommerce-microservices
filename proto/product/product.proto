@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package product;
+
+service ProductService {
+
+ rpc CreateCategory (CreateCategoryRequest) returns (CategoryResponse);
+ rpc FindAllCategories (Empty) returns (CategoryListResponse);
+ rpc CreateProduct (CreateProductRequest) returns (ProductResponse);
+ rpc FindAllProducts (Empty) returns (ProductListResponse);
+ rpc FindProductById (FindProductByIdRequest) returns (ProductResponse);
+ rpc UpdateProduct (UpdateProductRequest) returns (ProductResponse);
+ rpc DeleteProduct (FindProductByIdRequest) returns (ProductResponse);
+}
+
+message Empty {}
+
+message CreateCategoryRequest {
+ string name = 1;
+ string slug = 2;
+ string description = 3;
+}
+
+message CategoryResponse {
+ string id = 1;
+ string name = 2;
+ string slug = 3;
+ string description = 4;
+ bool isActive = 5;
+}
+
+message CategoryListResponse {
+ repeated CategoryResponse categories = 1;
+}
+
+message CreateProductRequest {
+ string categoryId = 1;
+ string name = 2;
+ string slug = 3;
+ string description = 4;
+ string price = 5;
+ string sku = 6;
+}
+
+message FindProductByIdRequest {
+ string id = 1;
+}
+
+message UpdateProductRequest {
+ string id = 1;
+ string categoryId = 2;
+ string name = 3;
+ string slug = 4;
+ string description = 5;
+ string price = 6;
+ string sku = 7;
+}
+
+message ProductResponse {
+ string id = 1;
+ string categoryId = 2;
+ string name = 3;
+ string slug = 4;
+ string description = 5;
+ string price = 6;
+ string sku = 7;
+ bool isActive = 8;
+}
+
+message ProductListResponse {
+ repeated ProductResponse products = 1;
+}
