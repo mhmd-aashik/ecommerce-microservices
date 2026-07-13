@@ -7,6 +7,7 @@ import { envValidationSchema } from '@app/common';
 import { ProductsModule } from './products/products.module';
 import { LoggerModule } from 'nestjs-pino';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UsersModule } from './users/users.module';
     }),
     ProductsModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],
