@@ -42,7 +42,7 @@ export class ProductsController {
     return this.productsService.createProduct(body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get()
   findAllProducts() {
     return this.productsService.findAllProducts();

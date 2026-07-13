@@ -8,6 +8,7 @@ import { ProductsModule } from './products/products.module';
 import { LoggerModule } from 'nestjs-pino';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     ProductsModule,
     UsersModule,
     AuthModule,
+    InventoryModule,
   ],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],
