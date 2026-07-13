@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package inventory;
+
+service InventoryService {
+  rpc CreateWarehouse (CreateWarehouseRequest) returns (WarehouseResponse);
+  rpc CreateInventoryItem (CreateInventoryItemRequest) returns (InventoryItemResponse);
+  rpc GetInventoryItem (GetInventoryItemRequest) returns (InventoryItemResponse);
+  rpc GetAvailableStock (GetInventoryItemRequest) returns (AvailableStockResponse);
+
+  rpc IncreaseStock (StockChangeRequest) returns (InventoryItemResponse);
+  rpc DecreaseStock (StockChangeRequest) returns (InventoryItemResponse);
+
+  rpc ReserveStock (ReserveStockRequest) returns (StockReservationResponse);
+  rpc ReleaseStock (ReservationRequest) returns (StockReservationResponse);
+  rpc ConfirmStock (ReservationRequest) returns (StockReservationResponse);
+}
+
+message CreateWarehouseRequest {
+  string name = 1;
+  string code = 2;
+  string address = 3;
+}
+
+message WarehouseResponse {
+  string id = 1;
+  string name = 2;
+  string code = 3;
+  string address = 4;
+  bool isActive = 5;
+}
+
+message CreateInventoryItemRequest {
+  string productId = 1;
+  string warehouseId = 2;
+  int32 quantityOnHand = 3;
+  int32 reorderLevel = 4;
+}
+
+message GetInventoryItemRequest {
+  string productId = 1;
+  string warehouseId = 2;
+}
+
+message InventoryItemResponse {
+  string id = 1;
+  string productId = 2;
+  string warehouseId = 3;
+  int32 quantityOnHand = 4;
+  int32 quantityReserved = 5;
+  int32 availableStock = 6;
+  int32 reorderLevel = 7;
+}
+
+message AvailableStockResponse {
+  string productId = 1;
+  string warehouseId = 2;
+  int32 availableStock = 3;
+}
+
+message StockChangeRequest {
+  string productId = 1;
+  string warehouseId = 2;
+  int32 quantity = 3;
+  string reason = 4;
+}
+
+message ReserveStockRequest {
+  string productId = 1;
+  string warehouseId = 2;
+  string orderId = 3;
+  int32 quantity = 4;
+}
+
+message ReservationRequest {
+  string reservationId = 1;
+}
+
+message StockReservationResponse {
+  string id = 1;
+  string inventoryItemId = 2;
+  string orderId = 3;
+  int32 quantity = 4;
+  string status = 5;
+}
