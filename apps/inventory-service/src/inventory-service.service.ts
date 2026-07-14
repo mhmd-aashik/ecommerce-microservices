@@ -354,4 +354,64 @@ export class InventoryServiceService {
       availableStock: item.quantityOnHand - item.quantityReserved,
     };
   }
+
+  async ensureDefaultWarehouse() {
+    const [existingWarehouse] = await this.db
+      .select()
+      .from(warehouses)
+      .where(eq(warehouses.code, 'DEFAULT'));
+
+    if (existingWarehouse) {
+      return existingWarehouse;
+    }
+
+    const [warehouse] = await this.db
+      .insert(warehouses)
+      .values({
+        name: 'Default Warehouse',
+        code: 'DEFAULT',
+        address: 'System default warehouse',
+      })
+      .returning();
+
+    return warehouse;
+  }
+
+  async createDefaultInventoryForProduct(productId: string) {
+    const warehouse = await this.ensureDefaultWarehouse();
+    const [existingItem] = await this.db
+      .select()
+      .from(inventoryItems)
+      .where(
+        and(
+          eq(inventoryItems.productId, productId),
+          eq(inventoryItems.warehouseId, warehouse.id),
+        ),
+      );
+
+    if (existingItem) {
+      return existingItem;
+    }
+
+    const [item] = await this.db
+      .insert(inventoryItems)
+      .values({
+        productId,
+        warehouseId: warehouse.id,
+        quantityOnHand: 0,
+        quantityReserved: 0,
+        reorderLevel: 0,
+      })
+      .returning();
+
+    await this.createMovement(
+      item.id,
+      'adjustment',
+      0,
+      'Default inventory item created from product.created event',
+      productId,
+    );
+
+    return item;
+  }
 }
