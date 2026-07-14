@@ -6,8 +6,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { GRPC_TO_HTTP_STATUS } from '../constants/grpc-status-map';
 import { CORRELATION_ID_HEADER } from '../middleware/correlation-id.middleware';
+import { GRPC_TO_HTTP_STATUS } from '@app/common';
 
 @Catch()
 export class GrpcExceptionFilter implements ExceptionFilter {
@@ -75,7 +75,9 @@ export class GrpcExceptionFilter implements ExceptionFilter {
 
   private isGrpcError(exception: unknown): exception is {
     code: number;
+
     details?: string;
+
     message?: string;
   } {
     return (

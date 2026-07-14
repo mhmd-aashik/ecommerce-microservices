@@ -6,6 +6,7 @@ export class GrpcInternalException extends GrpcException {
     super({
       code: status.INTERNAL,
       message,
+      error: 'INTERNAL',
     });
   }
 }

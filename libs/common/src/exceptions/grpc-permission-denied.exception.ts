@@ -6,6 +6,7 @@ export class GrpcPermissionDeniedException extends GrpcException {
     super({
       code: status.PERMISSION_DENIED,
       message,
+      error: 'PERMISSION_DENIED',
     });
   }
 }

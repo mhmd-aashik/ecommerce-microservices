@@ -6,6 +6,7 @@ export class GrpcUnauthenticatedException extends GrpcException {
     super({
       code: status.UNAUTHENTICATED,
       message,
+      error: 'UNAUTHENTICATED',
     });
   }
 }
