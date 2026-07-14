@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from '@app/common';
 import { DatabaseModule } from '@app/database';
 import { HealthController } from './health/health.controller';
+import { KafkaModule } from '@app/kafka';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { HealthController } from './health/health.controller';
       validationSchema: envValidationSchema,
     }),
     DatabaseModule.forRoot('PRODUCT_DATABASE_URL'),
+    KafkaModule,
   ],
   controllers: [ProductServiceController, HealthController],
   providers: [ProductServiceService],

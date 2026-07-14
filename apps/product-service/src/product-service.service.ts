@@ -7,10 +7,14 @@ import { and, eq, or } from 'drizzle-orm';
 import { CreateProductDto } from './products/dto/create-product.dto';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
+import { KAFKA_TOPICS, KafkaProducerService } from '@app/kafka';
 
 @Injectable()
 export class ProductServiceService {
-  constructor(@Inject(DRIZZLE_DB) private readonly db: ProductDatabase) {}
+  constructor(
+    @Inject(DRIZZLE_DB) private readonly db: ProductDatabase,
+    private readonly kafkaProducer: KafkaProducerService,
+  ) {}
 
   async createCategory(dto: CreateCategoryDto) {
     const [existingCategory] = await this.db
@@ -77,6 +81,20 @@ export class ProductServiceService {
         sku: dto.sku,
       })
       .returning();
+
+    await this.kafkaProducer.publish(
+      KAFKA_TOPICS.PRODUCT_CREATED,
+      {
+        productId: product.id,
+        name: product.name,
+        sku: product.sku,
+        price: product.price,
+      },
+      {
+        key: product.id,
+        eventType: KAFKA_TOPICS.PRODUCT_CREATED,
+      },
+    );
 
     return product;
   }
