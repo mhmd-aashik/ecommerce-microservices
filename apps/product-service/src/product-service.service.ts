@@ -7,7 +7,11 @@ import { and, eq, or } from 'drizzle-orm';
 import { CreateProductDto } from './products/dto/create-product.dto';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
-import { KAFKA_TOPICS, KafkaProducerService } from '@app/kafka';
+import {
+  KAFKA_TOPICS,
+  KafkaProducerService,
+  ProductCreatedPayload,
+} from '@app/kafka';
 
 @Injectable()
 export class ProductServiceService {
@@ -82,19 +86,17 @@ export class ProductServiceService {
       })
       .returning();
 
-    await this.kafkaProducer.publish(
-      KAFKA_TOPICS.PRODUCT_CREATED,
-      {
-        productId: product.id,
-        name: product.name,
-        sku: product.sku,
-        price: product.price,
-      },
-      {
-        key: product.id,
-        eventType: KAFKA_TOPICS.PRODUCT_CREATED,
-      },
-    );
+    const payload: ProductCreatedPayload = {
+      productId: product.id,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+    };
+
+    await this.kafkaProducer.publish(KAFKA_TOPICS.PRODUCT_CREATED, payload, {
+      key: product.id,
+      eventType: KAFKA_TOPICS.PRODUCT_CREATED,
+    });
 
     return product;
   }
