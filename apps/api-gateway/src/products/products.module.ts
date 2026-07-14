@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+import { ClientsModule } from '@nestjs/microservices';
+import { createGrpcClientOptions, PRODUCT_PACKAGE } from '@app/common';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 
@@ -8,13 +8,12 @@ import { ProductsService } from './products.service';
   imports: [
     ClientsModule.register([
       {
-        name: 'PRODUCT_PACKAGE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'product',
-          protoPath: join(process.cwd(), 'proto/product/product.proto'),
+        name: PRODUCT_PACKAGE,
+        ...createGrpcClientOptions({
+          packageName: 'product',
+          protoPath: 'proto/product/product.proto',
           url: process.env.PRODUCT_GRPC_URL || 'localhost:50051',
-        },
+        }),
       },
     ]),
   ],

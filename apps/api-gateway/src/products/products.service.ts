@@ -8,12 +8,13 @@ import {
 } from './product-grpc.interface';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { PRODUCT_PACKAGE } from '@app/common';
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
   private productGrpcService: ProductGrpcService;
 
-  constructor(@Inject('PRODUCT_PACKAGE') private readonly client: ClientGrpc) {}
+  constructor(@Inject(PRODUCT_PACKAGE) private readonly client: ClientGrpc) {}
 
   onModuleInit() {
     this.productGrpcService =

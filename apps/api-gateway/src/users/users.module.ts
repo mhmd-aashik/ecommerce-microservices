@@ -1,20 +1,19 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+import { ClientsModule } from '@nestjs/microservices';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { createGrpcClientOptions, USER_PACKAGE } from '@app/common';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'USER_PACKAGE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'user',
-          protoPath: join(process.cwd(), 'proto/user/user.proto'),
+        name: USER_PACKAGE,
+        ...createGrpcClientOptions({
+          packageName: 'user',
+          protoPath: 'proto/user/user.proto',
           url: process.env.USER_GRPC_URL || 'localhost:50056',
-        },
+        }),
       },
     ]),
   ],
@@ -22,3 +21,16 @@ import { UsersService } from './users.service';
   providers: [UsersService],
 })
 export class UsersModule {}
+
+// imports: [
+//   ClientsModule.register([
+//     {
+//       name: PRODUCT_PACKAGE,
+//       ...createGrpcClientOptions({
+//         packageName: 'product',
+//         protoPath: 'proto/product/product.proto',
+//         url: process.env.PRODUCT_GRPC_URL || 'localhost:50051',
+//       }),
+//     },
+//   ]),
+// ],

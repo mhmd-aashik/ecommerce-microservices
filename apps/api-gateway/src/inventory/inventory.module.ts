@@ -1,20 +1,19 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
+import { ClientsModule } from '@nestjs/microservices';
 import { InventoryController } from './inventory.controller';
 import { InventoryService } from './inventory.service';
+import { createGrpcClientOptions, INVENTORY_PACKAGE } from '@app/common';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: 'INVENTORY_PACKAGE',
-        transport: Transport.GRPC,
-        options: {
-          package: 'inventory',
-          protoPath: join(process.cwd(), 'proto/inventory/inventory.proto'),
+        name: INVENTORY_PACKAGE,
+        ...createGrpcClientOptions({
+          packageName: 'inventory',
+          protoPath: 'proto/inventory/inventory.proto',
           url: process.env.INVENTORY_GRPC_URL || 'localhost:50053',
-        },
+        }),
       },
     ]),
   ],

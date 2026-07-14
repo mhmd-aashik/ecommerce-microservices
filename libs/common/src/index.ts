@@ -4,3 +4,4 @@ export * from './config/env.validation';
 export * from './exceptions';
 export * from './constants';
 export * from './logger';
+export * from './grpc';
