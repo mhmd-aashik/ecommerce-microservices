@@ -8,12 +8,16 @@ import {
   Roles,
   AUTH_ROLES,
 } from '@app/auth';
+import { CacheService } from '@app/redis';
 
 @Controller({
   version: '1',
 })
 export class ApiGatewayController {
-  constructor(private readonly apiGatewayService: ApiGatewayService) {}
+  constructor(
+    private readonly apiGatewayService: ApiGatewayService,
+    private readonly cacheService: CacheService,
+  ) {}
 
   @Get()
   getHello(): string {
@@ -44,5 +48,13 @@ export class ApiGatewayController {
       message: 'Welcome admin',
       user,
     };
+  }
+
+  // http://localhost:3000/api/v1/redis-test
+  @Get('redis-test')
+  async redisTest() {
+    await this.cacheService.set('hello', { message: 'Redis works' }, 60);
+
+    return this.cacheService.get('hello');
   }
 }

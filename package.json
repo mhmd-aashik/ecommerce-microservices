@@ -32,6 +32,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "drizzle-orm": "^0.45.2",
+    "ioredis": "^5.11.1",
     "joi": "^18.2.3",
     "jwks-rsa": "^4.1.0",
     "kafkajs": "^2.2.4",
@@ -96,7 +97,8 @@
       "^@app/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
-      "^@app/kafka(|/.*)$": "<rootDir>/libs/kafka/src/$1"
+      "^@app/kafka(|/.*)$": "<rootDir>/libs/kafka/src/$1",
+      "^@app/redis(|/.*)$": "<rootDir>/libs/redis/src/$1"
     }
   }
 }

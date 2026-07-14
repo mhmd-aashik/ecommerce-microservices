@@ -10,6 +10,7 @@ import { InventoryModule } from './inventory/inventory.module';
 import { LoggerModule } from '@app/common';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from '@app/auth';
+import { RedisModule } from '@app/redis';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from '@app/auth';
     AuthModule,
     InventoryModule,
     HealthModule,
+    RedisModule,
   ],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],
