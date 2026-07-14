@@ -12,9 +12,7 @@ import { ProductsService } from './products.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
+import { AUTH_ROLES, JwtAuthGuard, Roles, RolesGuard } from '@app/auth';
 
 @Controller({
   path: 'products',
@@ -24,7 +22,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(AUTH_ROLES.ADMIN)
   @Post('categories')
   createCategory(@Body() body: CreateCategoryDto) {
     return this.productsService.createCategory(body);
@@ -36,34 +34,34 @@ export class ProductsController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('seller', 'admin')
+  @Roles(AUTH_ROLES.SELLER, AUTH_ROLES.ADMIN)
   @Post()
   createProduct(@Body() body: CreateProductDto) {
     return this.productsService.createProduct(body);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAllProducts() {
     return this.productsService.findAllProducts();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('seller', 'admin')
+  @Roles(AUTH_ROLES.SELLER, AUTH_ROLES.ADMIN)
   @Patch(':id')
   findProductById(@Param('id') id: string) {
     return this.productsService.findProductById(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('seller', 'admin')
+  @Roles(AUTH_ROLES.SELLER, AUTH_ROLES.ADMIN)
   @Patch(':id')
   updateProduct(@Param('id') id: string, @Body() body: UpdateProductDto) {
     return this.productsService.updateProduct(id, body);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(AUTH_ROLES.ADMIN)
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {
     return this.productsService.deleteProduct(id);
