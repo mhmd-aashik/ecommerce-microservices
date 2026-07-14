@@ -3,3 +3,4 @@ export * from './tokens/kafka.tokens';
 export * from './producers';
 export * from './events';
 export * from './topics';
+export * from './consumers';

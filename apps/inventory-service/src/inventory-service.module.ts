@@ -4,6 +4,8 @@ import { InventoryServiceService } from './inventory-service.service';
 import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema, LoggerModule } from '@app/common';
 import { DatabaseModule } from '@app/database';
+import { KafkaModule } from '@app/kafka';
+import { InventoryProductEventsConsumer } from './consumers/product-events.consumer';
 
 @Module({
   imports: [
@@ -14,8 +16,9 @@ import { DatabaseModule } from '@app/database';
     }),
     DatabaseModule.forRoot('INVENTORY_DATABASE_URL'),
     LoggerModule,
+    KafkaModule,
   ],
   controllers: [InventoryServiceController],
-  providers: [InventoryServiceService],
+  providers: [InventoryServiceService, InventoryProductEventsConsumer],
 })
 export class InventoryServiceModule {}

@@ -16,6 +16,7 @@ import {
 
 @Injectable()
 export class InventoryServiceService {
+  handleProductCreated: any;
   constructor(
     @Inject(DRIZZLE_DB)
     private readonly db: InventoryDatabase,
