@@ -9,6 +9,7 @@ import {
 } from './db/schema';
 import type { InventoryDatabase } from './db';
 import {
+  AppLogger,
   GrpcAlreadyExistsException,
   GrpcInvalidArgumentException,
 } from '@app/common';
@@ -18,7 +19,10 @@ export class InventoryServiceService {
   constructor(
     @Inject(DRIZZLE_DB)
     private readonly db: InventoryDatabase,
-  ) {}
+    private readonly logger: AppLogger,
+  ) {
+    this.logger.setContext(InventoryServiceService.name);
+  }
 
   async createWarehouse(data: {
     name: string;

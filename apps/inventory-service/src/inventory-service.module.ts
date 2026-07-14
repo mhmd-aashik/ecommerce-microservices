@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { InventoryServiceController } from './inventory-service.controller';
 import { InventoryServiceService } from './inventory-service.service';
 import { ConfigModule } from '@nestjs/config';
-import { envValidationSchema } from '@app/common';
+import { envValidationSchema, LoggerModule } from '@app/common';
 import { DatabaseModule } from '@app/database';
 
 @Module({
@@ -13,6 +13,7 @@ import { DatabaseModule } from '@app/database';
       validationSchema: envValidationSchema,
     }),
     DatabaseModule.forRoot('INVENTORY_DATABASE_URL'),
+    LoggerModule,
   ],
   controllers: [InventoryServiceController],
   providers: [InventoryServiceService],
