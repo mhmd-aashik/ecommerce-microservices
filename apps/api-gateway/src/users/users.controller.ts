@@ -11,9 +11,7 @@ import { UsersService } from './users.service';
 import { CreateUserProfileDto } from './dto/create-user-profile.dto';
 import { UpdateUserProfileDto } from './dto/update-user-profile.dto';
 import { AddUserAddressDto } from './dto/add-user-address.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard, RolesGuard, Roles, AUTH_ROLES } from '@app/auth';
 
 @Controller({
   path: 'users',
@@ -30,7 +28,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'support')
+  @Roles(AUTH_ROLES.ADMIN, AUTH_ROLES.SUPPORT)
   @Get(':id')
   findUserById(@Param('id') id: string) {
     return this.usersService.findUserById(id);
@@ -42,7 +40,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(AUTH_ROLES.ADMIN)
   @Patch(':id')
   updateUserProfile(
     @Param('id') id: string,
@@ -52,7 +50,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('customer', 'admin')
+  @Roles(AUTH_ROLES.CUSTOMER, AUTH_ROLES.ADMIN)
   @Post('addresses')
   addUserAddress(@Body() body: AddUserAddressDto) {
     return this.usersService.addUserAddress(body);

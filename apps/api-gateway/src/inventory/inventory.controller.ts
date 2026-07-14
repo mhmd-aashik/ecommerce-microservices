@@ -12,9 +12,7 @@ import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { CreateInventoryItemDto } from './dto/create-inventory-item.dto';
 import { StockChangeDto } from './dto/stock-change.dto';
 import { ReserveStockDto } from './dto/reserve-stock.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard, RolesGuard, Roles, AUTH_ROLES } from '@app/auth';
 
 @Controller({
   path: 'inventory',
@@ -24,14 +22,14 @@ export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(AUTH_ROLES.ADMIN)
   @Post('warehouses')
   createWarehouse(@Body() body: CreateWarehouseDto) {
     return this.inventoryService.createWarehouse(body);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'seller')
+  @Roles(AUTH_ROLES.ADMIN, AUTH_ROLES.SELLER)
   @Post('items')
   createInventoryItem(@Body() body: CreateInventoryItemDto) {
     return this.inventoryService.createInventoryItem(body);
@@ -56,35 +54,35 @@ export class InventoryController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'seller')
+  @Roles(AUTH_ROLES.ADMIN, AUTH_ROLES.SELLER)
   @Patch('stock/increase')
   increaseStock(@Body() body: StockChangeDto) {
     return this.inventoryService.increaseStock(body);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'seller')
+  @Roles(AUTH_ROLES.ADMIN, AUTH_ROLES.SELLER)
   @Patch('stock/decrease')
   decreaseStock(@Body() body: StockChangeDto) {
     return this.inventoryService.decreaseStock(body);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(AUTH_ROLES.ADMIN)
   @Post('stock/reserve')
   reserveStock(@Body() body: ReserveStockDto) {
     return this.inventoryService.reserveStock(body);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(AUTH_ROLES.ADMIN)
   @Patch('reservations/:reservationId/release')
   releaseStock(@Param('reservationId') reservationId: string) {
     return this.inventoryService.releaseStock({ reservationId });
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles(AUTH_ROLES.ADMIN)
   @Patch('reservations/:reservationId/confirm')
   confirmStock(@Param('reservationId') reservationId: string) {
     return this.inventoryService.confirmStock({ reservationId });
