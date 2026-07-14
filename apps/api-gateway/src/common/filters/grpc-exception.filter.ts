@@ -54,7 +54,8 @@ export class GrpcExceptionFilter implements ExceptionFilter {
 
       return {
         statusCode: status,
-        message: exception.details ?? 'Internal Server Error',
+        message:
+          exception.details ?? exception.message ?? 'Internal Server Error',
         error: HttpStatus[status],
         timestamp: new Date().toISOString(),
         path,
@@ -75,6 +76,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
   private isGrpcError(exception: unknown): exception is {
     code: number;
     details?: string;
+    message?: string;
   } {
     return (
       typeof exception === 'object' &&

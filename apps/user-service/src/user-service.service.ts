@@ -1,13 +1,9 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
 import { userAddresses, users } from './db/schema';
 import { DRIZZLE_DB } from '@app/database';
 import type { UserDatabase } from './db';
+import { GrpcAlreadyExistsException } from '@app/common';
 
 @Injectable()
 export class UserServiceService {
@@ -28,7 +24,7 @@ export class UserServiceService {
       .from(users)
       .where(eq(users.keycloakUserId, data.keycloakUserId));
     if (existingUser) {
-      throw new ConflictException('User profile already exists');
+      throw new GrpcAlreadyExistsException('User profile already exists');
     }
 
     const [user] = await this.db

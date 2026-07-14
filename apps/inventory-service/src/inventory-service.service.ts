@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { and, eq } from 'drizzle-orm';
 import { DRIZZLE_DB } from '@app/database';
 import {
@@ -13,6 +8,10 @@ import {
   warehouses,
 } from './db/schema';
 import type { InventoryDatabase } from './db';
+import {
+  GrpcAlreadyExistsException,
+  GrpcInvalidArgumentException,
+} from '@app/common';
 
 @Injectable()
 export class InventoryServiceService {
@@ -32,7 +31,7 @@ export class InventoryServiceService {
       .where(eq(warehouses.code, data.code));
 
     if (existing) {
-      throw new ConflictException('Warehouse code already exists');
+      throw new GrpcAlreadyExistsException('Warehouse code already exists');
     }
 
     const [warehouse] = await this.db
@@ -60,7 +59,7 @@ export class InventoryServiceService {
       );
 
     if (existing) {
-      throw new ConflictException('Inventory item already exists');
+      throw new GrpcAlreadyExistsException('Inventory item already exists');
     }
 
     const [item] = await this.db
@@ -129,7 +128,7 @@ export class InventoryServiceService {
     const availableStock = item.quantityOnHand - item.quantityReserved;
 
     if (availableStock < data.quantity) {
-      throw new ConflictException('Not enough available stock');
+      throw new GrpcInvalidArgumentException('Not enough available stock');
     }
 
     const [updated] = await this.db
@@ -161,7 +160,7 @@ export class InventoryServiceService {
     const availableStock = item.quantityOnHand - item.quantityReserved;
 
     if (availableStock < data.quantity) {
-      throw new ConflictException('Not enough stock to reserve');
+      throw new GrpcInvalidArgumentException('Not enough stock to reserve');
     }
 
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
@@ -199,7 +198,7 @@ export class InventoryServiceService {
     const reservation = await this.findReservation(data.reservationId);
 
     if (reservation.status !== 'active') {
-      throw new ConflictException('Reservation is not active');
+      throw new GrpcInvalidArgumentException('Reservation is not active');
     }
 
     const [item] = await this.db
@@ -243,7 +242,7 @@ export class InventoryServiceService {
     const reservation = await this.findReservation(data.reservationId);
 
     if (reservation.status !== 'active') {
-      throw new ConflictException('Reservation is not active');
+      throw new GrpcInvalidArgumentException('Reservation is not active');
     }
 
     const [item] = await this.db
