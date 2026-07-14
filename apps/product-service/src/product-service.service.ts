@@ -11,6 +11,7 @@ import {
   KAFKA_TOPICS,
   KafkaProducerService,
   ProductCreatedPayload,
+  ProductUpdatedPayload,
 } from '@app/kafka';
 
 @Injectable()
@@ -127,6 +128,19 @@ export class ProductServiceService {
       .where(eq(products.id, id))
       .returning();
 
+    const payload: ProductUpdatedPayload = {
+      productId: product.id,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+      isActive: product.isActive,
+    };
+
+    await this.kafkaProducer.publish(KAFKA_TOPICS.PRODUCT_UPDATED, payload, {
+      key: product.id,
+      eventType: KAFKA_TOPICS.PRODUCT_UPDATED,
+    });
+
     return product;
   }
 
@@ -140,6 +154,16 @@ export class ProductServiceService {
       })
       .where(eq(products.id, id))
       .returning();
+
+    const payload: ProductUpdatedPayload = {
+      productId: product.id,
+      isActive: product.isActive,
+    };
+
+    await this.kafkaProducer.publish(KAFKA_TOPICS.PRODUCT_UPDATED, payload, {
+      key: product.id,
+      eventType: KAFKA_TOPICS.PRODUCT_UPDATED,
+    });
 
     return product;
   }

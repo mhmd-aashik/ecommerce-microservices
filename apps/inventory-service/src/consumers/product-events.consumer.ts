@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { KafkaConsumerService, KAFKA_TOPICS, BaseEvent } from '@app/kafka';
 
@@ -19,7 +18,7 @@ export class InventoryProductEventsConsumer implements OnModuleInit {
         groupId: 'inventory-service',
         topic: KAFKA_TOPICS.PRODUCT_CREATED,
       },
-      async (event: BaseEvent<ProductCreatedPayload>) => {
+      (event: BaseEvent<ProductCreatedPayload>) => {
         console.log('Product created event received:', event.payload);
 
         // later:

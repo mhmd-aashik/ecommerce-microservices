@@ -6,6 +6,7 @@ import { envValidationSchema, LoggerModule } from '@app/common';
 import { DatabaseModule } from '@app/database';
 import { KafkaModule } from '@app/kafka';
 import { InventoryProductEventsConsumer } from './consumers/product-events.consumer';
+import { ProductCreatedConsumer } from './events/consumers/product-created.consumer';
 
 @Module({
   imports: [
@@ -19,6 +20,10 @@ import { InventoryProductEventsConsumer } from './consumers/product-events.consu
     KafkaModule,
   ],
   controllers: [InventoryServiceController],
-  providers: [InventoryServiceService, InventoryProductEventsConsumer],
+  providers: [
+    InventoryServiceService,
+    InventoryProductEventsConsumer,
+    ProductCreatedConsumer,
+  ],
 })
 export class InventoryServiceModule {}

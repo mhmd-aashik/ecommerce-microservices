@@ -21,7 +21,7 @@ export class KafkaConsumerService implements OnModuleDestroy {
     handler: (
       event: BaseEvent<TPayload>,
       rawMessage: EachMessagePayload,
-    ) => Promise<void>,
+    ) => void | Promise<void>,
   ) {
     const consumer = this.kafka.consumer({
       groupId: options.groupId,
