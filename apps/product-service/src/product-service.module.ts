@@ -4,6 +4,7 @@ import { ProductServiceService } from './product-service.service';
 import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from '@app/common';
 import { DatabaseModule } from '@app/database';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { DatabaseModule } from '@app/database';
     }),
     DatabaseModule.forRoot('PRODUCT_DATABASE_URL'),
   ],
-  controllers: [ProductServiceController],
+  controllers: [ProductServiceController, HealthController],
   providers: [ProductServiceService],
 })
 export class ProductServiceModule {}

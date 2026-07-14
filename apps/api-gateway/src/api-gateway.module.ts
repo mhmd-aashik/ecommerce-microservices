@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { LoggerModule } from '@app/common';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LoggerModule } from '@app/common';
     UsersModule,
     AuthModule,
     InventoryModule,
+    HealthModule,
   ],
   controllers: [ApiGatewayController],
   providers: [ApiGatewayService],
