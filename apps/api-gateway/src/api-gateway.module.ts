@@ -5,10 +5,10 @@ import { ApiGatewayService } from './api-gateway.service';
 import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from '@app/common';
 import { ProductsModule } from './products/products.module';
-import { LoggerModule } from 'nestjs-pino';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { LoggerModule } from '@app/common';
 
 @Module({
   imports: [
@@ -17,11 +17,7 @@ import { InventoryModule } from './inventory/inventory.module';
       envFilePath: '.env',
       validationSchema: envValidationSchema,
     }),
-    LoggerModule.forRoot({
-      pinoHttp: {
-        level: process.env.LOG_LEVEL || 'info',
-      },
-    }),
+    LoggerModule,
     ProductsModule,
     UsersModule,
     AuthModule,
