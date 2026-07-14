@@ -2,7 +2,7 @@ import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { DRIZZLE_DB } from './database.constants';
+import { DRIZZLE_DB } from '../tokens/database.tokens';
 
 export function createDatabaseProvider(databaseUrlKey: string): Provider {
   return {
